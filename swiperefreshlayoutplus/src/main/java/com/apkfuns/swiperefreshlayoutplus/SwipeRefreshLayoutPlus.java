@@ -52,8 +52,14 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     // SuperSwipeRefreshLayout内的目标View，比如RecyclerView,ListView,ScrollView,GridView etc.
     private View mTarget;
 
-    private OnPullRefreshListener mListener;// 下拉刷新listener
-    private OnPushLoadMoreListener mOnPushLoadMoreListener;// 上拉加载更多
+    // 下拉刷新listener
+    private OnPullRefreshListenerAdapter mOnPullRefreshListenerAdapter;
+    private OnPullRefreshListener mListener;
+    // 上拉加载更多
+    private OnPushLoadMoreListenerAdapter mOnPushLoadMoreListenerAdapter;
+    private OnPushLoadMoreListener mOnPushLoadMoreListener;
+    // 下拉和上拉都支持
+    private OnRefreshListenerAdapter refreshListenerAdapter;
 
     private boolean mRefreshing = false;
     private boolean mLoadMore = false;
@@ -117,6 +123,8 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
 
     private int mLoadMoreViewId;
     private int mRefreshViewId;
+    private int mRefreshViewBackgroundColor;
+
 
     /**
      * 下拉时，超过距离之后，弹回来的动画监听器
@@ -231,6 +239,9 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
                     R.layout.view_normal_refresh_footer);
             mRefreshViewId = typedArray.getResourceId(R.styleable.swipeRefreshLayoutPlus_attr_mRefreshView,
                     0);
+            mRefreshViewBackgroundColor = typedArray.getColor(
+                    R.styleable.swipeRefreshLayoutPlus_attr_mRefreshViewBackgroundColor,
+                    getResources().getColor(R.color.transparent));
             typedArray.recycle();
         }
         WindowManager wm = (WindowManager) context
@@ -245,6 +256,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         // 创建头部和尾部
         createHeaderViewContainer();
         createFooterViewContainer();
+        setHeaderViewBackgroundColor(mRefreshViewBackgroundColor);
 
         ViewCompat.setChildrenDrawingOrderEnabled(this, true);
         mSpinnerFinalOffset = DEFAULT_CIRCLE_TARGET * metrics.density;
@@ -324,6 +336,10 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         }
     }
 
+    public void setHeaderViewBackgroundColor(int color) {
+        mHeadViewContainer.setBackgroundColor(color);
+    }
+
     /**
      * 设置
      *
@@ -333,8 +349,8 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         mListener = listener;
     }
 
-    public void setHeaderViewBackgroundColor(int color) {
-        mHeadViewContainer.setBackgroundColor(color);
+    public void setOnPullRefreshListener(OnPullRefreshListenerAdapter adapter) {
+        this.mOnPullRefreshListenerAdapter = adapter;
     }
 
     /**
@@ -345,6 +361,14 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     public void setOnPushLoadMoreListener(
             OnPushLoadMoreListener onPushLoadMoreListener) {
         this.mOnPushLoadMoreListener = onPushLoadMoreListener;
+    }
+
+    public void setOnPushLoadMoreListener(OnPushLoadMoreListenerAdapter adapter) {
+        this.mOnPushLoadMoreListenerAdapter = adapter;
+    }
+
+    public void setOnRefreshListener(OnRefreshListenerAdapter adapter){
+
     }
 
     /**
@@ -1203,22 +1227,22 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
      * 下拉刷新回调
      */
     public interface OnPullRefreshListener {
-        public void onRefresh();
+        void onRefresh();
 
-        public void onPullDistance(int distance);
+        void onPullDistance(int distance);
 
-        public void onPullEnable(boolean enable);
+        void onPullEnable(boolean enable);
     }
 
     /**
      * 上拉加载更多
      */
     public interface OnPushLoadMoreListener {
-        public void onLoadMore();
+        void onLoadMore();
 
-        public void onPushDistance(int distance);
+        void onPushDistance(int distance);
 
-        public void onPushEnable(boolean enable);
+        void onPushEnable(boolean enable);
     }
 
     /**
@@ -1241,6 +1265,43 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
 
         }
 
+    }
+
+
+    /**
+     * 同时处理下拉刷新和上拉加载
+     */
+    public class OnRefreshListenerAdapter implements OnPushLoadMoreListener, OnPullRefreshListener {
+
+        @Override
+        public void onRefresh() {
+
+        }
+
+        @Override
+        public void onPullDistance(int distance) {
+
+        }
+
+        @Override
+        public void onPullEnable(boolean enable) {
+
+        }
+
+        @Override
+        public void onLoadMore() {
+
+        }
+
+        @Override
+        public void onPushDistance(int distance) {
+
+        }
+
+        @Override
+        public void onPushEnable(boolean enable) {
+
+        }
     }
 
     public class OnPushLoadMoreListenerAdapter implements
