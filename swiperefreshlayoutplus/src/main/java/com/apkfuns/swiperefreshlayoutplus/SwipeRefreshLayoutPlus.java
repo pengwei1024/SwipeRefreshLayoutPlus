@@ -124,7 +124,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     private int mLoadMoreViewId;
     private int mRefreshViewId;
     private int mRefreshViewBackgroundColor;
-
+    private int mListViewId;
 
     /**
      * 下拉时，超过距离之后，弹回来的动画监听器
@@ -242,6 +242,8 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
             mRefreshViewBackgroundColor = typedArray.getColor(
                     R.styleable.swipeRefreshLayoutPlus_attr_mRefreshViewBackgroundColor,
                     getResources().getColor(R.color.transparent));
+            mListViewId = typedArray.getResourceId(
+                    R.styleable.swipeRefreshLayoutPlus_attr_mListViewId, 0);
             typedArray.recycle();
         }
         WindowManager wm = (WindowManager) context
@@ -367,8 +369,8 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         this.mOnPushLoadMoreListenerAdapter = adapter;
     }
 
-    public void setOnRefreshListener(OnRefreshListenerAdapter adapter){
-
+    public void setOnRefreshListener(OnRefreshListenerAdapter adapter) {
+        this.refreshListenerAdapter = adapter;
     }
 
     /**
@@ -457,11 +459,17 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     }
 
     /**
-     * 确保mTarget不为空<br>
+     * 确保mTarget不为空
      * mTarget一般是可滑动的ScrollView,ListView,RecyclerView等
      */
     private void ensureTarget() {
         if (mTarget == null) {
+            if (mListViewId > 0) {
+                mTarget = findViewById(mListViewId);
+                if (mTarget != null) {
+                    return;
+                }
+            }
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
                 if (!child.equals(mHeadViewContainer)
