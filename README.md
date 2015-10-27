@@ -11,7 +11,11 @@ compile 'com.apkfuns.swiperefreshlayoutplus:swiperefreshlayoutplus:1.0'
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/refreshView"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    app:mLoadMoreView="@layout/view_normal_refresh_footer"
+    app:mRefreshView="@layout/view_normal_refresh_header"
+    app:mRefreshViewBackgroundColor="#ddd"
+    app:mScrollableChildId="@+id/listView">
 
     <ListView
         android:id="@+id/listView"

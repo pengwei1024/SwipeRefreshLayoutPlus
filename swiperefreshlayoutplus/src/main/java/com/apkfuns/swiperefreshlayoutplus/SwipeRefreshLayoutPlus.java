@@ -264,6 +264,34 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     }
 
     /**
+     * 确保mTarget不为空
+     */
+    private void ensureTarget() {
+        if (mTarget == null) {
+            // 通过id找
+            if (mListViewId > 0) {
+                mTarget = findViewById(mListViewId);
+                if (mTarget != null) {
+                    return;
+                }
+            }
+            // 遍历子节点
+            for (int i = 0; i < getChildCount(); i++) {
+                View child = getChildAt(i);
+                if (!child.equals(mHeadViewContainer)
+                        && !child.equals(mFooterViewContainer)) {
+                    mTarget = child;
+                    return;
+                }
+            }
+            // 还是找不到
+            if (mTarget == null) {
+                throw new NullPointerException("can't find Scrollable Child!");
+            }
+        }
+    }
+
+    /**
      * 孩子节点绘制的顺序
      *
      * @param childCount
@@ -443,22 +471,6 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         return mRefreshing;
     }
 
-    /**
-     * 确保mTarget不为空<br>
-     * mTarget一般是可滑动的ScrollView,ListView,RecyclerView等
-     */
-    private void ensureTarget() {
-        if (mTarget == null) {
-            for (int i = 0; i < getChildCount(); i++) {
-                View child = getChildAt(i);
-                if (!child.equals(mHeadViewContainer)
-                        && !child.equals(mFooterViewContainer)) {
-                    mTarget = child;
-                    break;
-                }
-            }
-        }
-    }
 
     /**
      * Set the distance to trigger a sync in dips
@@ -1180,70 +1192,6 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     }
 
     /**
-     * 下拉刷新回调
-     */
-    public interface OnPullRefreshListener {
-        public void onRefresh();
-
-        public void onPullDistance(int distance);
-
-        public void onPullEnable(boolean enable);
-    }
-
-    /**
-     * 上拉加载更多
-     */
-    public interface OnPushLoadMoreListener {
-        public void onLoadMore();
-
-        public void onPushDistance(int distance);
-
-        public void onPushEnable(boolean enable);
-    }
-
-    /**
-     * Adapter
-     */
-    public class OnPullRefreshListenerAdapter implements OnPullRefreshListener {
-
-        @Override
-        public void onRefresh() {
-
-        }
-
-        @Override
-        public void onPullDistance(int distance) {
-
-        }
-
-        @Override
-        public void onPullEnable(boolean enable) {
-
-        }
-
-    }
-
-    public class OnPushLoadMoreListenerAdapter implements
-            OnPushLoadMoreListener {
-
-        @Override
-        public void onLoadMore() {
-
-        }
-
-        @Override
-        public void onPushDistance(int distance) {
-
-        }
-
-        @Override
-        public void onPushEnable(boolean enable) {
-
-        }
-
-    }
-
-    /**
      * 设置默认下拉刷新进度条的颜色
      *
      * @param color
@@ -1270,4 +1218,73 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
             defaultProgressView.setShadowColor(color);
         }
     }
+
+
+    /**
+     *   ******************** 事件回调接口 **********************
+     */
+
+    /**
+     * 下拉刷新回调
+     */
+    public interface OnPullRefreshListener {
+        void onRefresh();
+
+        void onPullDistance(int distance);
+
+        void onPullEnable(boolean enable);
+    }
+
+    /**
+     * 上拉加载更多
+     */
+    public interface OnPushLoadMoreListener {
+        void onLoadMore();
+
+        void onPushDistance(int distance);
+
+        void onPushEnable(boolean enable);
+    }
+
+    /**
+     * Adapter
+     */
+    public class OnPullRefreshListenerAdapter implements OnPullRefreshListener {
+
+        @Override
+        public void onRefresh() {
+
+        }
+
+        @Override
+        public void onPullDistance(int distance) {
+
+        }
+
+        @Override
+        public void onPullEnable(boolean enable) {
+
+        }
+
+    }
+
+    public class OnPushLoadMoreListenerAdapter implements OnPushLoadMoreListener {
+
+        @Override
+        public void onLoadMore() {
+
+        }
+
+        @Override
+        public void onPushDistance(int distance) {
+
+        }
+
+        @Override
+        public void onPushEnable(boolean enable) {
+
+        }
+
+    }
+
 }

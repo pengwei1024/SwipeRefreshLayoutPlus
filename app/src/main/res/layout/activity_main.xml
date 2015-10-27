@@ -4,14 +4,11 @@
     android:id="@+id/refreshView"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:mScrollableChildId="@+id/listView"
-    app:mLoadMoreView="@layout/view_normal_refresh_footer">
+    app:mLoadMoreView="@layout/view_normal_refresh_footer"
+    app:mRefreshView="@layout/view_normal_refresh_header"
+    app:mRefreshViewBackgroundColor="#ddd"
+    app:mScrollableChildId="@+id/listView">
 
-    <!--<FrameLayout-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent">-->
-    <!-- -->
-    <!--</FrameLayout>-->
     <ListView
         android:id="@+id/listView"
         android:layout_width="match_parent"
