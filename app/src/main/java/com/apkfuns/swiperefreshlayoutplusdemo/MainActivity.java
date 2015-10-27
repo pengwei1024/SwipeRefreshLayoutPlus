@@ -3,6 +3,7 @@ package com.apkfuns.swiperefreshlayoutplusdemo;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -17,6 +18,7 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
     private ListView listView;
     private List<String> list;
     private ArrayAdapter adapter;
+    private int page;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,19 +31,20 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
         listView.setAdapter(adapter);
         refreshLayout.setOnPullRefreshListener(this);
         refreshLayout.setOnPushLoadMoreListener(this);
-//        refreshLayout.setHeaderViewBackgroundColor(Color.parseColor("#dddddd"));
+        onRefresh();
     }
 
-    private void addData() {
+    private void addData(int page) {
         for (int i = 'A'; i <= 'Z'; i++) {
-            list.add(String.valueOf((char) i));
+            list.add(String.format("page %s - %s", page, (char) i));
         }
     }
 
     @Override
     public void onRefresh() {
+        Log.d("test", "onRefresh()");
         list.clear();
-        addData();
+        addData(page = 0);
         adapter.notifyDataSetChanged();
         refreshLayout.setRefreshing(false);
     }
@@ -58,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements SwipeRefreshLayou
 
     @Override
     public void onLoadMore() {
-        addData();
+        Log.d("test", "onLoadMore()");
+        addData(++page);
         adapter.notifyDataSetChanged();
         refreshLayout.setLoadMore(false);
     }

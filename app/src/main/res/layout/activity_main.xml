@@ -9,8 +9,14 @@
     app:mRefreshViewBackgroundColor="#ddd"
     app:mScrollableChildId="@+id/listView">
 
-    <ListView
-        android:id="@+id/listView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent">
+
+        <ListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+    </FrameLayout>
 </com.apkfuns.swiperefreshlayoutplus.SwipeRefreshLayoutPlus>
+
