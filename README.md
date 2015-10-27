@@ -25,7 +25,7 @@ compile 'com.apkfuns.swiperefreshlayoutplus:swiperefreshlayoutplus:1.0'
 mLoadMoreView | reference | 上拉加载更多视图布局id
 mRefreshView | reference | 下拉刷新视图布局id
 mRefreshViewBackgroundColor | color |下拉刷新视图背景颜色
-mListViewId | reference | 包含的ScrollView,ListView,RecyclerView等Id值
+mScrollableChildId | reference | 包含的ScrollView,ListView,RecyclerView等Id值
 
 ### Thanks
 [SuperSwipeRefreshLayout](https://github.com/nuptboyzhb/SuperSwipeRefreshLayout)

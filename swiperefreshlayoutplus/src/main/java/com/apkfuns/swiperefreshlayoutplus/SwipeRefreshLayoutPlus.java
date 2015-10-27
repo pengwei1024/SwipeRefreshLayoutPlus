@@ -7,9 +7,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.RectF;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.view.MotionEventCompat;
@@ -34,7 +32,10 @@ import android.widget.AbsListView;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 
-
+/**
+ * Created by pengwei on 15/10/26.
+ * 可自定义的SwipeRefreshLayout
+ */
 @SuppressLint("ClickableViewAccessibility")
 public class SwipeRefreshLayoutPlus extends ViewGroup {
     private static final String LOG_TAG = "SwipeRefreshLayout";
@@ -49,17 +50,12 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     private static final int ANIMATE_TO_START_DURATION = 200;
     private static final int DEFAULT_CIRCLE_TARGET = 64;
 
-    // SuperSwipeRefreshLayout内的目标View，比如RecyclerView,ListView,ScrollView,GridView etc.
+    // SuperSwipeRefreshLayout内的目标View，比如RecyclerView,ListView,ScrollView,GridView
+    // etc.
     private View mTarget;
 
-    // 下拉刷新listener
-    private OnPullRefreshListenerAdapter mOnPullRefreshListenerAdapter;
-    private OnPullRefreshListener mListener;
-    // 上拉加载更多
-    private OnPushLoadMoreListenerAdapter mOnPushLoadMoreListenerAdapter;
-    private OnPushLoadMoreListener mOnPushLoadMoreListener;
-    // 下拉和上拉都支持
-    private OnRefreshListenerAdapter refreshListenerAdapter;
+    private OnPullRefreshListener mListener;// 下拉刷新listener
+    private OnPushLoadMoreListener mOnPushLoadMoreListener;// 上拉加载更多
 
     private boolean mRefreshing = false;
     private boolean mLoadMore = false;
@@ -76,6 +72,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
 
     private boolean mReturningToStart;
     private final DecelerateInterpolator mDecelerateInterpolator;
+    private static final int[] LAYOUT_ATTRS = new int[]{android.R.attr.enabled};
 
     private HeadViewContainer mHeadViewContainer;
     private RelativeLayout mFooterViewContainer;
@@ -99,7 +96,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
 
     private boolean mNotify;
 
-    private int mHeaderViewWidth; // headerView的宽度
+    private int mHeaderViewWidth;// headerView的宽度
 
     private int mFooterViewWidth;
 
@@ -232,20 +229,20 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         setWillNotDraw(false);
         mDecelerateInterpolator = new DecelerateInterpolator(
                 DECELERATE_INTERPOLATION_FACTOR);
+
         // 自定义参数
-        if (attrs != null) {
-            TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.swipeRefreshLayoutPlus_attr);
-            mLoadMoreViewId = typedArray.getResourceId(R.styleable.swipeRefreshLayoutPlus_attr_mLoadMoreView,
-                    R.layout.view_normal_refresh_footer);
-            mRefreshViewId = typedArray.getResourceId(R.styleable.swipeRefreshLayoutPlus_attr_mRefreshView,
-                    0);
-            mRefreshViewBackgroundColor = typedArray.getColor(
-                    R.styleable.swipeRefreshLayoutPlus_attr_mRefreshViewBackgroundColor,
-                    getResources().getColor(R.color.transparent));
-            mListViewId = typedArray.getResourceId(
-                    R.styleable.swipeRefreshLayoutPlus_attr_mListViewId, 0);
-            typedArray.recycle();
-        }
+        TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.swipeRefreshLayoutPlus_attr);
+        mLoadMoreViewId = typedArray.getResourceId(R.styleable.swipeRefreshLayoutPlus_attr_mLoadMoreView,
+                R.layout.view_normal_refresh_footer);
+        mRefreshViewId = typedArray.getResourceId(R.styleable.swipeRefreshLayoutPlus_attr_mRefreshView,
+                0);
+        mRefreshViewBackgroundColor = typedArray.getColor(
+                R.styleable.swipeRefreshLayoutPlus_attr_mRefreshViewBackgroundColor,
+                getResources().getColor(R.color.transparent));
+        mListViewId = typedArray.getResourceId(
+                R.styleable.swipeRefreshLayoutPlus_attr_mScrollableChildId, 0);
+        typedArray.recycle();
+
         WindowManager wm = (WindowManager) context
                 .getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
@@ -309,18 +306,18 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         mHeadViewContainer = new HeadViewContainer(getContext());
         mHeadViewContainer.setVisibility(View.GONE);
+        addView(mHeadViewContainer);
         if (mRefreshViewId != 0) {
             View headerView = LayoutInflater.from(getContext()).
                     inflate(mRefreshViewId, null, false);
             setHeaderView(headerView);
         } else {
-            defaultProgressView = new CircleProgressView(getContext());
+            defaultProgressView = new CircleProgressView(getContext(), density);
             defaultProgressView.setVisibility(View.VISIBLE);
             defaultProgressView.setOnDraw(false);
             mHeadViewContainer.addView(defaultProgressView, layoutParams);
             setTargetScrollWithLayout(false);
         }
-        addView(mHeadViewContainer);
     }
 
     /**
@@ -328,18 +325,14 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
      */
     private void createFooterViewContainer() {
         mFooterViewContainer = new RelativeLayout(getContext());
+        mFooterViewContainer.setBackgroundColor(Color.YELLOW);
         mFooterViewContainer.setVisibility(View.GONE);
         addView(mFooterViewContainer);
-        Log.d(LOG_TAG, String.format("mLoadMoreViewId=%d", mLoadMoreViewId));
         if (mLoadMoreViewId != 0) {
             View footerView = LayoutInflater.from(getContext()).
                     inflate(mLoadMoreViewId, null, false);
             setFooterView(footerView);
         }
-    }
-
-    public void setHeaderViewBackgroundColor(int color) {
-        mHeadViewContainer.setBackgroundColor(color);
     }
 
     /**
@@ -351,8 +344,8 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         mListener = listener;
     }
 
-    public void setOnPullRefreshListener(OnPullRefreshListenerAdapter adapter) {
-        this.mOnPullRefreshListenerAdapter = adapter;
+    public void setHeaderViewBackgroundColor(int color) {
+        mHeadViewContainer.setBackgroundColor(color);
     }
 
     /**
@@ -363,14 +356,6 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     public void setOnPushLoadMoreListener(
             OnPushLoadMoreListener onPushLoadMoreListener) {
         this.mOnPushLoadMoreListener = onPushLoadMoreListener;
-    }
-
-    public void setOnPushLoadMoreListener(OnPushLoadMoreListenerAdapter adapter) {
-        this.mOnPushLoadMoreListenerAdapter = adapter;
-    }
-
-    public void setOnRefreshListener(OnRefreshListenerAdapter adapter) {
-        this.refreshListenerAdapter = adapter;
     }
 
     /**
@@ -459,17 +444,11 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     }
 
     /**
-     * 确保mTarget不为空
+     * 确保mTarget不为空<br>
      * mTarget一般是可滑动的ScrollView,ListView,RecyclerView等
      */
     private void ensureTarget() {
         if (mTarget == null) {
-            if (mListViewId > 0) {
-                mTarget = findViewById(mListViewId);
-                if (mTarget != null) {
-                    return;
-                }
-            }
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
                 if (!child.equals(mHeadViewContainer)
@@ -931,7 +910,8 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
             case MotionEvent.ACTION_CANCEL: {
                 if (mActivePointerId == INVALID_POINTER) {
                     if (action == MotionEvent.ACTION_UP) {
-                        Log.e(LOG_TAG, "Got ACTION_UP event but don't have an active pointer id.");
+                        Log.e(LOG_TAG,
+                                "Got ACTION_UP event but don't have an active pointer id.");
                     }
                     return false;
                 }
@@ -1182,38 +1162,6 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
     }
 
     /**
-     * @Description 下拉刷新布局头部的容器
-     */
-    private class HeadViewContainer extends RelativeLayout {
-
-        private Animation.AnimationListener mListener;
-
-        public HeadViewContainer(Context context) {
-            super(context);
-        }
-
-        public void setAnimationListener(Animation.AnimationListener listener) {
-            mListener = listener;
-        }
-
-        @Override
-        public void onAnimationStart() {
-            super.onAnimationStart();
-            if (mListener != null) {
-                mListener.onAnimationStart(getAnimation());
-            }
-        }
-
-        @Override
-        public void onAnimationEnd() {
-            super.onAnimationEnd();
-            if (mListener != null) {
-                mListener.onAnimationEnd(getAnimation());
-            }
-        }
-    }
-
-    /**
      * 判断子View是否跟随手指的滑动而滑动，默认跟随
      *
      * @return
@@ -1235,22 +1183,22 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
      * 下拉刷新回调
      */
     public interface OnPullRefreshListener {
-        void onRefresh();
+        public void onRefresh();
 
-        void onPullDistance(int distance);
+        public void onPullDistance(int distance);
 
-        void onPullEnable(boolean enable);
+        public void onPullEnable(boolean enable);
     }
 
     /**
      * 上拉加载更多
      */
     public interface OnPushLoadMoreListener {
-        void onLoadMore();
+        public void onLoadMore();
 
-        void onPushDistance(int distance);
+        public void onPushDistance(int distance);
 
-        void onPushEnable(boolean enable);
+        public void onPushEnable(boolean enable);
     }
 
     /**
@@ -1273,43 +1221,6 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
 
         }
 
-    }
-
-
-    /**
-     * 同时处理下拉刷新和上拉加载
-     */
-    public class OnRefreshListenerAdapter implements OnPushLoadMoreListener, OnPullRefreshListener {
-
-        @Override
-        public void onRefresh() {
-
-        }
-
-        @Override
-        public void onPullDistance(int distance) {
-
-        }
-
-        @Override
-        public void onPullEnable(boolean enable) {
-
-        }
-
-        @Override
-        public void onLoadMore() {
-
-        }
-
-        @Override
-        public void onPushDistance(int distance) {
-
-        }
-
-        @Override
-        public void onPushEnable(boolean enable) {
-
-        }
     }
 
     public class OnPushLoadMoreListenerAdapter implements
@@ -1359,166 +1270,4 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
             defaultProgressView.setShadowColor(color);
         }
     }
-
-    /**
-     * 默认的下拉刷新样式
-     */
-    public class CircleProgressView extends View implements Runnable {
-
-        private static final int PEROID = 16;// 绘制周期
-        private Paint progressPaint;
-        private Paint bgPaint;
-        private int width;// view的高度
-        private int height;// view的宽度
-
-        private boolean isOnDraw = false;
-        private boolean isRunning = false;
-        private int startAngle = 0;
-        private int speed = 8;
-        private RectF ovalRect = null;
-        private RectF bgRect = null;
-        private int swipeAngle;
-        private int progressColor = 0xffcccccc;
-        private int circleBackgroundColor = 0xffffffff;
-        private int shadowColor = 0xff999999;
-
-        public CircleProgressView(Context context) {
-            super(context);
-        }
-
-        public CircleProgressView(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        public CircleProgressView(Context context, AttributeSet attrs,
-                                  int defStyleAttr) {
-            super(context, attrs, defStyleAttr);
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            super.onDraw(canvas);
-            canvas.drawArc(getBgRect(), 0, 360, false, createBgPaint());
-            int index = startAngle / 360;
-            if (index % 2 == 0) {
-                swipeAngle = (startAngle % 720) / 2;
-            } else {
-                swipeAngle = 360 - (startAngle % 720) / 2;
-            }
-            canvas.drawArc(getOvalRect(), startAngle, swipeAngle, false,
-                    createPaint());
-        }
-
-        private RectF getBgRect() {
-            width = getWidth();
-            height = getHeight();
-            if (bgRect == null) {
-                int offset = (int) (density * 2);
-                bgRect = new RectF(offset, offset, width - offset, height
-                        - offset);
-            }
-            return bgRect;
-        }
-
-        private RectF getOvalRect() {
-            width = getWidth();
-            height = getHeight();
-            if (ovalRect == null) {
-                int offset = (int) (density * 8);
-                ovalRect = new RectF(offset, offset, width - offset, height
-                        - offset);
-            }
-            return ovalRect;
-        }
-
-        public void setProgressColor(int progressColor) {
-            this.progressColor = progressColor;
-        }
-
-        public void setCircleBackgroundColor(int circleBackgroundColor) {
-            this.circleBackgroundColor = circleBackgroundColor;
-        }
-
-        public void setShadowColor(int shadowColor) {
-            this.shadowColor = shadowColor;
-        }
-
-        /**
-         * 根据画笔的颜色，创建画笔
-         *
-         * @return
-         */
-        private Paint createPaint() {
-            if (this.progressPaint == null) {
-                progressPaint = new Paint();
-                progressPaint.setStrokeWidth((int) (density * 3));
-                progressPaint.setStyle(Paint.Style.STROKE);
-                progressPaint.setAntiAlias(true);
-            }
-            progressPaint.setColor(progressColor);
-            return progressPaint;
-        }
-
-        private Paint createBgPaint() {
-            if (this.bgPaint == null) {
-                bgPaint = new Paint();
-                bgPaint.setColor(circleBackgroundColor);
-                bgPaint.setStyle(Paint.Style.FILL);
-                bgPaint.setAntiAlias(true);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    this.setLayerType(LAYER_TYPE_SOFTWARE, bgPaint);
-                }
-                bgPaint.setShadowLayer(4.0f, 0.0f, 2.0f, shadowColor);
-            }
-            return bgPaint;
-        }
-
-        public void setPullDistance(int distance) {
-            this.startAngle = distance * 2;
-            postInvalidate();
-        }
-
-        @Override
-        public void run() {
-            while (isOnDraw) {
-                isRunning = true;
-                long startTime = System.currentTimeMillis();
-                startAngle += speed;
-                postInvalidate();
-                long time = System.currentTimeMillis() - startTime;
-                if (time < PEROID) {
-                    try {
-                        Thread.sleep(PEROID - time);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        public void setOnDraw(boolean isOnDraw) {
-            this.isOnDraw = isOnDraw;
-        }
-
-        public void setSpeed(int speed) {
-            this.speed = speed;
-        }
-
-        public boolean isRunning() {
-            return isRunning;
-        }
-
-        @Override
-        public void onWindowFocusChanged(boolean hasWindowFocus) {
-            super.onWindowFocusChanged(hasWindowFocus);
-        }
-
-        @Override
-        protected void onDetachedFromWindow() {
-            isOnDraw = false;
-            super.onDetachedFromWindow();
-        }
-
-    }
-
 }
