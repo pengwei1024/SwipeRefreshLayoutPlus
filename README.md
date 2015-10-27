@@ -1,7 +1,7 @@
 # SwipeRefreshLayoutPlus
 a powerful SwipeRefreshLayout widget for android
 
-## <font color='red'>目前尚存在bug，请勿使用在项目中  </font>
+## <font color=red>目前尚存在bug，请勿使用在项目中  </font>
 
 ### Gradle
 ```java
