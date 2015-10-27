@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--superSwipeRefreshLayout样式-->
+    <declare-styleable name="superSwipeRefreshLayout_attr">
+        <attr name="mLoadMoreView" format="reference"></attr>
+        <attr name="mRefreshView" format="reference"></attr>
+    </declare-styleable>
+</resources>
