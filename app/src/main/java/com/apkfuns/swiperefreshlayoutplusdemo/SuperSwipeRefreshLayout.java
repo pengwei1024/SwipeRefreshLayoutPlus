@@ -1,3 +1,4 @@
+/*
 package com.apkfuns.swiperefreshlayoutplusdemo;
 
 import android.content.Context;
@@ -15,9 +16,11 @@ import android.widget.ListView;
 import java.util.ArrayList;
 import java.util.List;
 
+*/
 /**
  * Created by pengwei08 on 15/10/25.
- */
+ *//*
+
 public class SuperSwipeRefreshLayout extends SwipeRefreshLayout implements AbsListView.OnScrollListener {
 
     private Context mContext;
@@ -59,9 +62,11 @@ public class SuperSwipeRefreshLayout extends SwipeRefreshLayout implements AbsLi
         }
     }
 
-    /**
+    */
+/**
      * 获取ListView
-     */
+     *//*
+
     private void getListView() {
         int childCount = getChildCount();
         if (childCount > 0) {
@@ -94,11 +99,13 @@ public class SuperSwipeRefreshLayout extends SwipeRefreshLayout implements AbsLi
         }
     }
 
-    /**
+    */
+/**
      * 增加滚动监听
      *
      * @param mListener
-     */
+     *//*
+
     public void addOnScrollListener(AbsListView.OnScrollListener mListener) {
         if (onScrollListeners == null) {
             onScrollListeners = new ArrayList<>();
@@ -129,9 +136,11 @@ public class SuperSwipeRefreshLayout extends SwipeRefreshLayout implements AbsLi
         return super.dispatchTouchEvent(ev);
     }
 
-    /**
+    */
+/**
      * 加载数据
-     */
+     *//*
+
     private void loadData() {
         if (mOnLoadMoreListener != null) {
             setLoading(true);
@@ -139,11 +148,13 @@ public class SuperSwipeRefreshLayout extends SwipeRefreshLayout implements AbsLi
         }
     }
 
-    /**
+    */
+/**
      * 设置加载状态
      *
      * @param loading
-     */
+     *//*
+
     private void setLoading(boolean loading) {
         isLoading = loading;
         if (isLoading) {
@@ -155,20 +166,24 @@ public class SuperSwipeRefreshLayout extends SwipeRefreshLayout implements AbsLi
         }
     }
 
-    /**
+    */
+/**
      * 是否加载
      *
      * @return
-     */
+     *//*
+
     private boolean canLoad() {
         return isBottom() && !isLoading && isPullUp();
     }
 
-    /**
+    */
+/**
      * 是否到了底部
      *
      * @return
-     */
+     *//*
+
     private boolean isBottom() {
         if (mListView != null && mListView.getAdapter() != null) {
             return mListView.getLastVisiblePosition() == mListView.getAdapter().getCount() - 1;
@@ -176,11 +191,13 @@ public class SuperSwipeRefreshLayout extends SwipeRefreshLayout implements AbsLi
         return false;
     }
 
-    /**
+    */
+/**
      * 是否上拉操作
      *
      * @return
-     */
+     *//*
+
     private boolean isPullUp() {
         return (mYDown - mLastY) >= mTouchSlop;
     }
@@ -189,19 +206,24 @@ public class SuperSwipeRefreshLayout extends SwipeRefreshLayout implements AbsLi
         this.mOnLoadMoreListener = listener;
     }
 
-    /**
+    */
+/**
      * 加载更多的回调接口
-     */
+     *//*
+
     public static interface OnLoadMoreListener {
         void onLoadMore();
     }
 
-    /**
+    */
+/**
      * 清理垃圾
-     */
+     *//*
+
     public void onDestroy() {
         onScrollListeners.clear();
         onScrollListeners = null;
         mOnLoadMoreListener = null;
     }
 }
+*/
