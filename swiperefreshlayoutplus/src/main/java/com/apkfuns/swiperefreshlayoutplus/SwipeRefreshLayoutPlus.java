@@ -7,6 +7,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v4.view.MotionEventCompat;
@@ -197,9 +198,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         Display display = wm.getDefaultDisplay();
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
         mHeaderViewWidth = (int) display.getWidth();
-        mFooterViewWidth = (int) display.getWidth();
         mHeaderViewHeight = (int) (HEADER_VIEW_HEIGHT * metrics.density);
-        mFooterViewHeight = (int) (HEADER_VIEW_HEIGHT * metrics.density);
 
         // 创建头部和尾部
         createHeaderViewContainer();
@@ -305,6 +304,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
      */
     private void createFooterViewContainer() {
         mFooterViewContainer = new RelativeLayout(getContext());
+        mFooterViewContainer.setBackgroundColor(Color.YELLOW);
         mFooterViewContainer.setVisibility(View.GONE);
         addView(mFooterViewContainer);
         if (mLoadMoreViewId != 0) {
