@@ -1,4 +1,4 @@
-package com.apkfuns.swiperefreshlayoutplusdemo;
+package com.apkfuns.swiperefreshlayoutplusdemo.widgets;
 
 import android.content.Context;
 import android.util.AttributeSet;
