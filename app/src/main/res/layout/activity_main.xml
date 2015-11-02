@@ -6,8 +6,7 @@
     android:layout_height="match_parent"
     app:mLoadMoreView="@layout/view_normal_refresh_footer"
     app:mRefreshView="@layout/view_normal_refresh_header"
-    app:mRefreshViewBackgroundColor="#ddd"
-    app:mScrollableChildId="@+id/listView">
+    app:mRefreshViewBackgroundColor="#ddd">
 
     <ListView
         android:id="@+id/listView"

@@ -198,7 +198,9 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         Display display = wm.getDefaultDisplay();
         final DisplayMetrics metrics = getResources().getDisplayMetrics();
         mHeaderViewWidth = (int) display.getWidth();
+        mFooterViewWidth = (int) display.getWidth();
         mHeaderViewHeight = (int) (HEADER_VIEW_HEIGHT * metrics.density);
+        mFooterViewHeight = (int) (HEADER_VIEW_HEIGHT * metrics.density);
 
         // 创建头部和尾部
         createHeaderViewContainer();
@@ -295,7 +297,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
             defaultProgressView.setVisibility(View.VISIBLE);
             defaultProgressView.setOnDraw(false);
             mHeadViewContainer.addView(defaultProgressView, layoutParams);
-            setTargetScrollWithLayout(false);
+//            setTargetScrollWithLayout(false);
         }
     }
 
@@ -304,8 +306,8 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
      */
     private void createFooterViewContainer() {
         mFooterViewContainer = new RelativeLayout(getContext());
-        mFooterViewContainer.setBackgroundColor(Color.YELLOW);
         mFooterViewContainer.setVisibility(View.GONE);
+        mFooterViewContainer.setBackgroundColor(Color.YELLOW);
         addView(mFooterViewContainer);
         if (mLoadMoreViewId != 0) {
             View footerView = LayoutInflater.from(getContext()).
@@ -488,6 +490,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
             // 判断标志位，如果目标View不跟随手指的滑动而滑动，将下拉偏移量设置为0
             distance = 0;
         }
+        Log.d("test", "***=" + distance);
         final View child = mTarget;
         final int childLeft = getPaddingLeft();
         final int childTop = getPaddingTop() + distance - pushDistance; // 根据偏移量distance更新
@@ -645,6 +648,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
         // 下拉刷新判断
         switch (action) {
             case MotionEvent.ACTION_DOWN:
+//                Log.d("test", "ACTION_DOWN");
                 setTargetOffsetTopAndBottom(
                         mOriginalOffsetTop - mHeadViewContainer.getTop(), true);// 恢复HeaderView的初始位置
                 mActivePointerId = MotionEventCompat.getPointerId(ev, 0);
@@ -656,9 +660,9 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
                 mInitialMotionY = initialMotionY;// 记录按下的位置
 
             case MotionEvent.ACTION_MOVE:
+//                Log.d("test", "ACTION_MOVE");
                 if (mActivePointerId == INVALID_POINTER) {
-                    Log.e(LOG_TAG,
-                            "Got ACTION_MOVE event but don't have an active pointer id.");
+                    Log.e(LOG_TAG, "Got ACTION_MOVE event but don't have an active pointer id.");
                     return false;
                 }
 
@@ -691,7 +695,7 @@ public class SwipeRefreshLayoutPlus extends ViewGroup {
                 break;
         }
 
-        return mIsBeingDragged;// 如果正在拖动，则拦截子View的事件
+        return mIsBeingDragged; // 如果正在拖动，则拦截子View的事件
     }
 
     private float getMotionEventY(MotionEvent ev, int activePointerId) {
